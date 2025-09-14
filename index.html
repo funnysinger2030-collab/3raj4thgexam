@@ -1,0 +1,239 @@
+<!doctype html>
+ 
+  
+  Rajasthan Grade-4th — Mock Test (120 Questions)
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&amp;family=Noto+Sans:wght@400;700&amp;display=swap" rel="stylesheet" />
+  <style>
+    body{font-family:'Noto Sans', 'Noto Sans Devanagari', sans-serif;background:#f6f8fb;margin:0;color:#111}
+    .wrap{max-width:980px;margin:18px auto;padding:16px}
+    .card{background:#fff;padding:16px;border-radius:10px;box-shadow:0 8px 24px rgba(20,30,50,0.06)}
+    h1{margin:0 0 6px;font-size:20px}
+    .muted{color:#556;font-size:13px}
+    .fields{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
+    input,select{padding:8px;border-radius:6px;border:1px solid #ddd}
+    .controls{display:flex;gap:8px;align-items:center;margin-top:8px}
+    button{padding:8px 12px;border-radius:8px;border:0;background:#0b5ed7;color:#fff;cursor:pointer}
+    #timer{font-weight:600}
+    .nav{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}
+    .nav button{min-width:36px;padding:6px;border-radius:6px;border:1px solid #cfe0ff;background:#f0f7ff;color:#0b5ed7}
+    .nav button.attempt{border:2px solid #198754;background:#e9f7ef;color:#198754}
+    .question{border:1px solid #eee;padding:12px;border-radius:8px;margin-bottom:10px;background:#fff}
+    .opts{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+    label.opt{padding:8px;border-radius:6px;border:1px solid #efecec;display:flex;gap:8px;align-items:center;cursor:pointer}
+    .summary{margin-top:14px}
+    .result{padding:12px;background:#f1f9ef;border-radius:8px}
+    .small{font-size:13px;color:#444}
+    @media(max-width:720px){.fields{flex-direction:column}}
+  </style>
+
+
+  <div class="wrap">
+    <div class="card">
+      <h1>Rajasthan Grade–4th — Mock Test </h1>
+      <div class="muted">Total: 120 Q | Marks: 200 | Time: 2 hours | Negative: 1/3 per wrong</div>
+
+      <div class="fields">
+        <div>
+          <label class="small">नाम / Name</label><br />
+          <input id="name" type="text" placeholder="पूरा नाम लिखें / Full name" />
+        </div>
+        <div>
+          <label class="small">जिला / District</label><br />
+          <input id="district" type="text" placeholder="जिला लिखें / District" />
+        </div>
+        <div>
+          <label class="small">DOB</label><br />
+          <input id="dob" type="date" />
+        </div>
+        <div style="margin-left:auto">
+          <div class="small">समय: <span id="timer">02:00:00</span></div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button id="start">Start Test</button>
+        <button id="submit" style="background:#198754;margin-left:auto">Submit Test</button>
+      </div>
+
+      <div class="nav" id="nav"></div>
+      <div id="qarea"></div>
+      <div class="summary" id="summary" style="display:none"></div>
+
+    </div>
+  </div>
+
+<script>
+const TOTAL=120; const TOTAL_MARKS=200; const marksPerQ=TOTAL_MARKS/TOTAL; const neg=marksPerQ/3;
+let questions = [];
+
+// --- Build 120 bilingual MCQs ---
+// We'll create an array of objects: id, q_hi, q_en, options: [{hi,en}], answer('A'..'D')
+questions = [
+// 1-20 Hindi (General Hindi focused)
+{ id:1, q_hi:'निम्न में से कौन-सा शब्द संज्ञा है?', q_en:'Which of the following is a noun?', options:[{hi:'खेल',en:'khel / game'},{hi:'खेलना',en:'to play'},{hi:'खेलता',en:'plays'},{hi:'खेलकर',en:'after playing'}], answer:'A'},
+{ id:2, q_hi:'"वृक्ष" शब्द का वचन क्या है?', q_en:'What is the number of the word "वृक्ष"?', options:[{hi:'एकवचन',en:'singular'},{hi:'बहुवचन',en:'plural'},{hi:'द्विवचन',en:'dual'},{hi:'तृवचन',en:'none'}], answer:'A'},
+{ id:3, q_hi:'संधि विच्छेद: "दीर्घध्वनि" का विभाजन कौन-सा है?', q_en:'Sandhi split: which is correct for "दीर्घध्वनि"?', options:[{hi:'दीर्घ + ध्वनि',en:'deergh + dhvani'},{hi:'दीर्घध्व + नि',en:'deerghdhv + ni'},{hi:'दीर्घध् + वनि',en:'deerghdh + vani'},{hi:'दीर्घ + वनि',en:'deergh + vani'}], answer:'A'},
+{ id:4, q_hi:'"सत्य" का विलोम शब्द क्या है?', q_en:'What is the antonym of "सत्य" (truth)?', options:[{hi:'असत्य',en:'false'},{hi:'सही',en:'right'},{hi:'न्याय',en:'justice'},{hi:'सत्यता',en:'truthfulness'}], answer:'A'},
+{ id:5, q_hi:'निम्न वाक्य किस प्रकार का है: "वह खुश है"?', q_en:'What type of sentence is: "He is happy"?', options:[{hi:'वर्णनात्मक',en:'declarative'},{hi:'प्रश्नवाचक',en:'interrogative'},{hi:'आदेशात्मक',en:'imperative'},{hi:'विस्मयादिबोधक',en:'exclamatory'}], answer:'A'},
+{ id:6, q_hi:'"परिषद्" शब्द किस श्रेणी का है?', q_en:'"परिषद्" is an example of which type?', options:[{hi:'तद्भव',en:'tadbhav'},{hi:'तत्सम',en:'tatsam'},{hi:'देशज',en:'deshaj'},{hi:'विलोम',en:'antonym'}], answer:'B'},
+{ id:7, q_hi:'"बुद्धिमान" के लिए सही पर्यायवाची शब्द चुनिए', q_en:'Choose synonym of "बुद्धिमान" (intelligent)', options:[{hi:'मंद',en:'slow'},{hi:'चतुर',en:'clever'},{hi:'निर्बुद्धि',en:'stupid'},{hi:'आलसी',en:'lazy'}], answer:'B'},
+{ id:8, q_hi:'मुहावरा "नौ दो ग्यारह" का अर्थ क्या है?', q_en:'What does the idiom "नौ दो ग्यारह" mean?', options:[{hi:'भाग जाना',en:'to run away'},{hi:'बढ़ना',en:'to increase'},{hi:'खुश होना',en:'to be happy'},{hi:'देर करना',en:'to delay'}], answer:'A'},
+{ id:9, q_hi:'"फूलों की खुशबू" में विशेषण कौन-सा है?', q_en:'In "फूलों की खुशबू", which is adjective?', options:[{hi:'फूलों',en:'flowers'},{hi:'खुशबू',en:'fragrance'},{hi:'की',en:'of'},{hi:'नहीं',en:'none'}], answer:'B'},
+{ id:10, q_hi:'सही वाक्य चुनिए: "मैं कल बाजार ___"', q_en:'Choose correct sentence: "I went to market yesterday"', options:[{hi:'मैंने कल बाजार गया।',en:'I went to market yesterday.'},{hi:'मैं कल बाजार गया।',en:'I went to market yesterday.'},{hi:'मैंने कल बाजार गयी।',en:'I went to market yesterday (fem). '},{hi:'मैं कल बाजार गई।',en:'I went to market yesterday (fem).'}], answer:'B'},
+{ id:11, q_hi:'निम्न में से उपसर्ग कौन-सा है?', q_en:'Which of the following is a prefix?', options:[{hi:'प्रति',en:'prati'},{hi:'ज्ञान',en:'knowledge'},{hi:'कठिन',en:'difficult'},{hi:'चलना',en:'to move'}], answer:'A'},
+{ id:12, q_hi:'"अधिसूचना" किस प्रकार की सामग्री है?', q_en:'What type of document is "अधिसूचना"?', options:[{hi:'आधिकारिक सूचना',en:'official notification'},{hi:'कविता',en:'poem'},{hi:'विज्ञापन',en:'advertisement'},{hi:'निबंध',en:'essay'}], answer:'A'},
+{ id:13, q_hi:'"विद्यालय" शब्द किसका उदाहरण है?', q_en:'"विद्यालय" is an example of?', options:[{hi:'तत्सम',en:'tatsam'},{hi:'तद्भव',en:'tadbhav'},{hi:'देशज',en:'regional'},{hi:'अंग्रेज़ी',en:'English loan'}], answer:'A'},
+{ id:14, q_hi:'एक शब्द में बदलें: "बहुत बड़ा"', q_en:'One-word for " बहुत बड़ा"', options:[{hi:'विशाल',en:'huge'},{hi:'छोटा',en:'small'},{hi:'नया',en:'new'},{hi:'पुराना',en:'old'}], answer:'A'},
+{ id:15, q_hi:'वाक्य में शुद्धि चुनिए: "उसने अपनी किताब ___"', q_en:'Choose correct: "He took his book ___"', options:[{hi:'लिया',en:'took'},{hi:'ली',en:'took (fem)'},{hi:'लेगा',en:'will take'},{hi:'लेता',en:'takes'}], answer:'A'},
+{ id:16, q_hi:'संधि किसे कहते हैं?', q_en:'What is Sandhi?', options:[{hi:'शब्द-योग',en:'joining of sounds'},{hi:'वाक्य',en:'sentence'},{hi:'कथा',en:'story'},{hi:'कविता',en:'poem'}], answer:'A'},
+{ id:17, q_hi:'"पर्यायवाची" का अर्थ क्या है?', q_en:'What is meaning of "पर्यायवाची"?', options:[{hi:'synonym',en:'synonym'},{hi:'antonym',en:'antonym'},{hi:'prefix',en:'prefix'},{hi:'suffix',en:'suffix'}], answer:'A'},
+{ id:18, q_hi:'"वाक्यांश" में कितने शब्द हो सकते हैं?', q_en:'How many words can be in a phrase?', options:[{hi:'कई',en:'many'},{hi:'एक',en:'one'},{hi:'दो',en:'two'},{hi:'शून्य',en:'zero'}], answer:'A'},
+{ id:19, q_hi:'"कवि" किसे कहते हैं?', q_en:'Who is a "कवि"?', options:[{hi:'poet',en:'poet'},{hi:'actor',en:'actor'},{hi:'singer',en:'singer'},{hi:'dancer',en:'dancer'}], answer:'A'},
+{ id:20, q_hi:'"राम गया" वाक्य किस काल में है?', q_en:'"Ram went" is in which tense?', options:[{hi:'भूतकाल',en:'past'},{hi:'वर्तमान',en:'present'},{hi:'भविष्य',en:'future'},{hi:'अन्य',en:'other'}], answer:'A'},
+
+// 21-35 English (General English)
+{ id:21, q_hi:'"child" का बहुवचन क्या है?', q_en:'What is plural of "child"?', options:[{hi:'childs',en:'childs'},{hi:'children',en:'children'},{hi:'childes',en:'childes'},{hi:'childrens',en:'childrens'}], answer:'B'},
+{ id:22, q_hi:'Fill: "She ___ to school every day."', q_en:'Fill: "She ___ to school every day."', options:[{hi:'go',en:'go'},{hi:'goes',en:'goes'},{hi:'going',en:'going'},{hi:'gone',en:'gone'}], answer:'B'},
+{ id:23, q_hi:'Passive of: "They built the temple."', q_en:'Passive voice: "They built the temple."', options:[{hi:'The temple was built by them.',en:'The temple was built by them.'},{hi:'The temple is built by them.',en:'The temple is built by them.'},{hi:'The temple has built by them.',en:'The temple has built by them.'},{hi:'The temple will build by them.',en:'The temple will build by them.'}], answer:'A'},
+{ id:24, q_hi:'Antonym of "increase"?', q_en:'Antonym of "increase"?', options:[{hi:'rise',en:'rise'},{hi:'expand',en:'expand'},{hi:'decrease',en:'decrease'},{hi:'grow',en:'grow'}], answer:'C'},
+{ id:25, q_hi:'Fill: "I have been living here ___ 2010."', q_en:'Fill: "I have been living here ___ 2010."', options:[{hi:'since',en:'since'},{hi:'from',en:'from'},{hi:'at',en:'at'},{hi:'in',en:'in'}], answer:'A'},
+{ id:26, q_hi:'Choose article: "___ apple a day..."', q_en:'Choose article: "___ apple a day..."', options:[{hi:'A',en:'A'},{hi:'An',en:'An'},{hi:'The',en:'The'},{hi:'None',en:'None'}], answer:'B'},
+{ id:27, q_hi:'Indirect: "He said, \"I am tired\""', q_en:'Indirect speech: "He said, \"I am tired\""', options:[{hi:'He said that he was tired.',en:'He said that he was tired.'},{hi:'He said that he is tired.',en:'He said that he is tired.'},{hi:'He said that he has been tired.',en:'He said that he has been tired.'},{hi:'He said that he had been tired.',en:'He said that he had been tired.'}], answer:'A'},
+{ id:28, q_hi:'She is good ___ painting.', q_en:'She is good ___ painting.', options:[{hi:'at',en:'at'},{hi:'in',en:'in'},{hi:'on',en:'on'},{hi:'for',en:'for'}], answer:'A'},
+{ id:29, q_hi:'Identify error: "He don\'t like apples."', q_en:'Identify error: "He don\'t like apples."', options:[{hi:'He',en:'He'},{hi:'don\'t',en:'don\'t'},{hi:'like',en:'like'},{hi:'apples',en:'apples'}], answer:'B'},
+{ id:30, q_hi:'Synonym of "quick"?', q_en:'Synonym of "quick"?', options:[{hi:'slow',en:'slow'},{hi:'rapid',en:'rapid'},{hi:'dull',en:'dull'},{hi:'weak',en:'weak'}], answer:'B'},
+{ id:31, q_hi:'Correct sentence?', q_en:'Select correct sentence', options:[{hi:'She have done it.',en:'She have done it.'},{hi:'She has done it.',en:'She has done it.'},{hi:'She had done it now.',en:'She had done it now.'},{hi:'She doing it.',en:'She doing it.'}], answer:'B'},
+{ id:32, q_hi:'Fill: "I wish I ___ a bicycle."', q_en:'Fill: "I wish I ___ a bicycle."', options:[{hi:'have',en:'have'},{hi:'had',en:'had'},{hi:'has',en:'has'},{hi:'having',en:'having'}], answer:'B'},
+{ id:33, q_hi:'He ___ to play yesterday.', q_en:'He ___ to play football yesterday.', options:[{hi:'go',en:'go'},{hi:'went',en:'went'},{hi:'gone',en:'gone'},{hi:'going',en:'going'}], answer:'B'},
+{ id:34, q_hi:'Synonym of "happy"?', q_en:'Synonym of "happy"?', options:[{hi:'sad',en:'sad'},{hi:'angry',en:'angry'},{hi:'joyful',en:'joyful'},{hi:'tired',en:'tired'}], answer:'C'},
+{ id:35, q_hi:'Question form: "She can swim."', q_en:'Form question: "She can swim."', options:[{hi:'Can she swim?',en:'Can she swim?'},{hi:'She can swim?',en:'She can swim?'},{hi:'Does she can swim?',en:'Does she can swim?'},{hi:'Is she can swim?',en:'Is she can swim?'}], answer:'A'},
+
+// 36-50 Mathematics
+{ id:36, q_hi:'12 और 18 का HCF क्या है?', q_en:'HCF of 12 and 18?', options:[{hi:'3',en:'3'},{hi:'6',en:'6'},{hi:'12',en:'12'},{hi:'18',en:'18'}], answer:'B'},
+{ id:37, q_hi:'4 और 6 का LCM क्या है?', q_en:'LCM of 4 and 6?', options:[{hi:'12',en:'12'},{hi:'24',en:'24'},{hi:'8',en:'8'},{hi:'6',en:'6'}], answer:'A'},
+{ id:38, q_hi:'यदि a:b = 2:3 और b:c = 3:4 तो a:c क्या होगा?', q_en:'If a:b=2:3 and b:c=3:4 then a:c?', options:[{hi:'2:4',en:'2:4'},{hi:'2:6',en:'2:6'},{hi:'2:3',en:'2:3'},{hi:'3:4',en:'3:4'}], answer:'B'},
+{ id:39, q_hi:'₹1000 पर 5% p.a. 2 वर्षों का सरलीकृत ब्याज?', q_en:'Simple interest on ₹1000 for 2 years at 5% p.a.?', options:[{hi:'₹100',en:'₹100'},{hi:'₹50',en:'₹50'},{hi:'₹200',en:'₹200'},{hi:'₹150',en:'₹150'}], answer:'C'},
+{ id:40, q_hi:'आयत 5m × 8m का क्षेत्रफल?', q_en:'Area of rectangle 5m × 8m?', options:[{hi:'13 m²',en:'13 m²'},{hi:'40 m²',en:'40 m²'},{hi:'26 m²',en:'26 m²'},{hi:'20 m²',en:'20 m²'}], answer:'B'},
+{ id:41, q_hi:'Speed 60 km/h पर 180 km का समय?', q_en:'Time to travel 180 km at 60 km/h?', options:[{hi:'2 hours',en:'2 hours'},{hi:'3 hours',en:'3 hours'},{hi:'4 hours',en:'4 hours'},{hi:'5 hours',en:'5 hours'}], answer:'B'},
+{ id:42, q_hi:'15% of 200 = ?', q_en:'15% of 200 = ?', options:[{hi:'15',en:'15'},{hi:'30',en:'30'},{hi:'35',en:'35'},{hi:'25',en:'25'}], answer:'B'},
+{ id:43, q_hi:'यदि x+5=12 तो x = ?', q_en:'If x+5=12 then x=?', options:[{hi:'5',en:'5'},{hi:'6',en:'6'},{hi:'7',en:'7'},{hi:'8',en:'8'}], answer:'C'},
+{ id:44, q_hi:'5,7,9 का औसत?', q_en:'Average of 5,7,9?', options:[{hi:'7',en:'7'},{hi:'8',en:'8'},{hi:'6',en:'6'},{hi:'9',en:'9'}], answer:'A'},
+{ id:45, q_hi:'1/4 को प्रतिशत में बदलें', q_en:'Convert 1/4 to percentage', options:[{hi:'25%',en:'25%'},{hi:'40%',en:'40%'},{hi:'0.25%',en:'0.25%'},{hi:'4%',en:'4%'}], answer:'A'},
+{ id:46, q_hi:'अनुपात 3:4 और कुल 35 हो तो बड़ा भाग?', q_en:'If ratio 3:4 and total 35, larger part?', options:[{hi:'15',en:'15'},{hi:'20',en:'20'},{hi:'21',en:'21'},{hi:'12',en:'12'}], answer:'C'},
+{ id:47, q_hi:'(7×8) ÷ (2×2) = ?', q_en:'(7×8) ÷ (2×2) = ?', options:[{hi:'14',en:'14'},{hi:'28',en:'28'},{hi:'7',en:'7'},{hi:'56',en:'56'}], answer:'A'},
+{ id:48, q_hi:'भुजा 6 cm वाली वर्ग का परिमाप?', q_en:'Perimeter of square side 6 cm?', options:[{hi:'24 cm',en:'24 cm'},{hi:'36 cm',en:'36 cm'},{hi:'12 cm',en:'12 cm'},{hi:'18 cm',en:'18 cm'}], answer:'A'},
+{ id:49, q_hi:'100 m को 5 sec में पार करने वाली ट्रेन की गति m/s?', q_en:'Train covers 100 m in 5 sec, speed m/s?', options:[{hi:'20 m/s',en:'20 m/s'},{hi:'25 m/s',en:'25 m/s'},{hi:'15 m/s',en:'15 m/s'},{hi:'10 m/s',en:'10 m/s'}], answer:'A'},
+{ id:50, q_hi:'₹200 पर 10% वृद्धि के बाद नया मूल्य?', q_en:'New price after 10% increase on ₹200?', options:[{hi:'₹220',en:'₹220'},{hi:'₹210',en:'₹210'},{hi:'₹200',en:'₹200'},{hi:'₹230',en:'₹230'}], answer:'A'},
+
+// 51-120 GK (70 questions)
+{ id:51, q_hi:'राजस्थान की राजधानी कौन-सी है?', q_en:'What is the capital of Rajasthan?', options:[{hi:'जयपुर',en:'Jaipur'},{hi:'जोधपुर',en:'Jodhpur'},{hi:'उदयपुर',en:'Udaipur'},{hi:'अजमेर',en:'Ajmer'}], answer:'A'},
+{ id:52, q_hi:'राजस्थान का सबसे बड़ा जिला (क्षेत्र)?', q_en:'Which is largest district of Rajasthan by area?', options:[{hi:'जैसलमेर',en:'Jaisalmer'},{hi:'जोधपुर',en:'Jodhpur'},{hi:'बाड़मेर',en:'Barmer'},{hi:'चित्तौड़गढ़',en:'Chittorgarh'}], answer:'A'},
+{ id:53, q_hi:'सारिस्का राष्ट्रीय उद्यान किस जिले में है?', q_en:'Sariska National Park is in which district?', options:[{hi:'अलवर',en:'Alwar'},{hi:'जयपुर',en:'Jaipur'},{hi:'भरतपुर',en:'Bharatpur'},{hi:'अजमेर',en:'Ajmer'}], answer:'A'},
+{ id:54, q_hi:'थार रेगिस्तान मुख्यतः किस भाग में फैला है?', q_en:'Thar desert mainly spreads in which part?', options:[{hi:'पश्चिमी राजस्थान',en:'Western Rajasthan'},{hi:'पूर्वी राजस्थान',en:'Eastern Rajasthan'},{hi:'उत्तर',en:'North'},{hi:'दक्षिण',en:'South'}], answer:'A'},
+{ id:55, q_hi:'राजस्थान की प्रमुख नदी कौन-सी है?', q_en:'Which is a major river in Rajasthan?', options:[{hi:'लूनी',en:'Luni'},{hi:'गंगा',en:'Ganga'},{hi:'यमुना',en:'Yamuna'},{hi:'गोदावरी',en:'Godavari'}], answer:'A'},
+{ id:56, q_hi:'अरावली पर्वतमाला किस राज्य में प्रमुख है?', q_en:'Aravalli range is primarily in which state?', options:[{hi:'राजस्थान',en:'Rajasthan'},{hi:'उत्तर प्रदेश',en:'Uttar Pradesh'},{hi:'महाराष्ट्र',en:'Maharashtra'},{hi:'गुजरात',en:'Gujarat'}], answer:'A'},
+{ id:57, q_hi:'बाड़मेर किस सीमा के निकट है?', q_en:'Barmer is near which international border?', options:[{hi:'पाकिस्तान',en:'Pakistan'},{hi:'चीन',en:'China'},{hi:'नेपाल',en:'Nepal'},{hi:'बांग्लादेश',en:'Bangladesh'}], answer:'A'},
+{ id:58, q_hi:'जयपुर का प्रसिद्ध किला कौन-सा है?', q_en:'Which is the famous fort of Jaipur?', options:[{hi:'अंबर किला',en:'Amber Fort'},{hi:'मेहरानगढ़',en:'Mehrangarh'},{hi:'कुंभलगढ़',en:'Kumbhalgarh'},{hi:'चित्तौड़गढ़',en:'Chittorgarh'}], answer:'A'},
+{ id:59, q_hi:'राजस्थान में किस क्षेत्र में वर्षा सबसे कम होती है?', q_en:'Which region in Rajasthan receives least rainfall?', options:[{hi:'रेगिस्तानी क्षेत्र',en:'Desert area'},{hi:'हिमालय',en:'Himalaya'},{hi:'उत्तरी',en:'Northern'},{hi:'दक्षिणी',en:'Southern'}], answer:'A'},
+{ id:60, q_hi:'राजस्थान की प्रमुख फसल कौन-सी है?', q_en:'Which is a major crop of Rajasthan?', options:[{hi:'गेहूँ',en:'Wheat'},{hi:'धान',en:'Paddy'},{hi:'नारियल',en:'Coconut'},{hi:'चावल',en:'Rice'}], answer:'A'},
+{ id:61, q_hi:'मारवाड़ का प्रमुख शहर कौन-सा है?', q_en:'Which is main city of Marwar?', options:[{hi:'जोधपुर',en:'Jodhpur'},{hi:'जयपुर',en:'Jaipur'},{hi:'उदयपुर',en:'Udaipur'},{hi:'अजमेर',en:'Ajmer'}], answer:'A'},
+{ id:62, q_hi:'राजस्थान का प्रसिद्ध लोक नृत्य कौन-सा है?', q_en:'Which is famous folk dance of Rajasthan?', options:[{hi:'घूमर',en:'Ghoomar'},{hi:'भांगड़ा',en:'Bhangra'},{hi:'कथक',en:'Kathak'},{hi:'बिरहा',en:'Birha'}], answer:'A'},
+{ id:63, q_hi:'जयपुर का संस्थापक कौन था?', q_en:'Who founded Jaipur?', options:[{hi:'सवाई जयसिंह',en:'Sawai Jai Singh'},{hi:'महाराणा प्रताप',en:'Maharana Pratap'},{hi:'अकबर',en:'Akbar'},{hi:'राणा सांगा',en:'Rana Sanga'}], answer:'A'},
+{ id:64, q_hi:'चित्तौड़गढ़ किला किस राजवंश से जुड़ा है?', q_en:'Chittorgarh Fort is associated with which dynasty?', options:[{hi:'सिसोदिया',en:'Sisodia'},{hi:'मुग़ल',en:'Mughal'},{hi:'मौर्य',en:'Maurya'},{hi:'पाल',en:'Pala'}], answer:'A'},
+{ id:65, q_hi:'जैसलमेर किस चीज के लिए प्रसिद्ध है?', q_en:'Jaisalmer is famous for?', options:[{hi:'रेत के किले और हवेलियाँ',en:'sandstone forts & havelis'},{hi:'झीलें',en:'lakes'},{hi:'उद्योग',en:'industry'},{hi:'बौद्ध धरोहर',en:'Buddhist sites'}], answer:'A'},
+{ id:66, q_hi:'राजस्थानी लोक संगीत किसे दर्शाता है?', q_en:'Rajasthani folk music represents?', options:[{hi:'लोक संस्कृति',en:'folk culture'},{hi:'पाश्चात्य संगीत',en:'western music'},{hi:'हिप-हॉप',en:'hip-hop'},{hi:'रेप',en:'rap'}], answer:'A'},
+{ id:67, q_hi:'हल्दीघाटी का युद्ध किससे जुड़ा है?', q_en:'Battle of Haldighati is associated with?', options:[{hi:'महाराणा प्रताप',en:'Maharana Pratap'},{hi:'अकबर',en:'Akbar'},{hi:'औरंगजेब',en:'Aurangzeb'},{hi:'शिवाजी',en:'Shivaji'}], answer:'A'},
+{ id:68, q_hi:'Pushkar मेला किस शहर में होता है?', q_en:'Pushkar fair is held in which city?', options:[{hi:'Pushkar (Ajmer)',en:'Pushkar (Ajmer)'},{hi:'Jaipur',en:'Jaipur'},{hi:'Jodhpur',en:'Jodhpur'},{hi:'Udaipur',en:'Udaipur'}], answer:'A'},
+{ id:69, q_hi:'राज्य पशु कौन-सा है?', q_en:'What is state animal?', options:[{hi:'नीलगाय',en:'Nilgai'},{hi:'शेर',en:'Lion'},{hi:'हाथी',en:'Elephant'},{hi:'गाय',en:'Cow'}], answer:'A'},
+{ id:70, q_hi:'राजस्थानी पुरुष पारंपरिक पोशाक क्या है?', q_en:'Traditional male attire of Rajasthan?', options:[{hi:'पगड़ी और अंगोछा',en:'turban and angocha'},{hi:'साड़ी',en:'saree'},{hi:'लुंगी',en:'lungi'},{hi:'जपानी कपड़े',en:'kimono'}], answer:'A'},
+{ id:71, q_hi:'जलियांवाला बाग कांड किस वर्ष हुआ?', q_en:'Jallianwala Bagh massacre occurred in which year?', options:[{hi:'1919',en:'1919'},{hi:'1857',en:'1857'},{hi:'1947',en:'1947'},{hi:'1905',en:'1905'}], answer:'A'},
+{ id:72, q_hi:'डॉ. भीमराव अंबेडकर किसके लिए प्रसिद्ध हैं?', q_en:'Dr. B.R. Ambedkar is known for?', options:[{hi:'संविधान निर्माण',en:'Drafting the Constitution'},{hi:'विज्ञान',en:'science'},{hi:'संगीत',en:'music'},{hi:'कला',en:'art'}], answer:'A'},
+{ id:73, q_hi:'राजस्थानी लोककथा किस माध्यम से प्रचलित है?', q_en:'Rajasthani folk tales are passed through?', options:[{hi:'कहानियाँ और गीत',en:'stories and songs'},{hi:'सिनेमा',en:'cinema'},{hi:'टेलीविजन',en:'television'},{hi:'रेडियो',en:'radio'}], answer:'A'},
+{ id:74, q_hi:'जैसलमेर का किला किस चीज से बना होता है?', q_en:'Jaisalmer Fort is mainly made of?', options:[{hi:'सैंडस्टोन',en:'sandstone'},{hi:'सिमेंट',en:'cement'},{hi:'लकड़ी',en:'wood'},{hi:'कांच',en:'glass'}], answer:'A'},
+{ id:75, q_hi:'किस काल में राजस्थान के कई किले बने?', q_en:'In which period many forts of Rajasthan were built?', options:[{hi:'मध्यकाल',en:'medieval period'},{hi:'आधुनिक',en:'modern'},{hi:'भविष्य',en:'future'},{hi:'प्रागैतिहासिक',en:'prehistoric'}], answer:'A'},
+{ id:76, q_hi:'कुंभलगढ़ किस चीज के लिए प्रसिद्ध है?', q_en:'Kumbhalgarh is famous for?', options:[{hi:'दीवारों और किले',en:'walls and forts'},{hi:'रेत',en:'sand'},{hi:'झीलें',en:'lakes'},{hi:'पहाड़',en:'mountains'}], answer:'A'},
+{ id:77, q_hi:'राजस्थानी साहित्य की प्रमुख भाषा कौन-सी है?', q_en:'Major literary language of Rajasthan?', options:[{hi:'राजस्थानी',en:'Rajasthani'},{hi:'मराठी',en:'Marathi'},{hi:'तेलुगु',en:'Telugu'},{hi:'बांग्ला',en:'Bengali'}], answer:'A'},
+{ id:78, q_hi:'राजस्थान का प्रमुख पत्थर शिल्प क्या है?', q_en:'Major stone craft of Rajasthan?', options:[{hi:'सैंडस्टोन',en:'sandstone'},{hi:'ग्रेनाइट',en:'granite'},{hi:'मार्बल',en:'marble'},{hi:'क्वार्ट्ज',en:'quartz'}], answer:'A'},
+{ id:79, q_hi:'"City of Lakes" किस शहर के लिए कहा जाता है?', q_en:'"City of Lakes" refers to which city?', options:[{hi:'उदयपुर',en:'Udaipur'},{hi:'जयपुर',en:'Jaipur'},{hi:'जोधपुर',en:'Jodhpur'},{hi:'अजमेर',en:'Ajmer'}], answer:'A'},
+{ id:80, q_hi:'किसने राजस्थान की कृषि को प्रभावित किया?', q_en:'What has influenced Rajasthan agriculture?', options:[{hi:'सिंचाई परियोजनाएँ',en:'irrigation projects'},{hi:'समुद्री व्यापार',en:'sea trade'},{hi:'वायु मार्ग',en:'air routes'},{hi:'ऑटो उद्योग',en:'auto industry'}], answer:'A'},
+{ id:81, q_hi:'राज्यपाल किस द्वारा नियुक्त होता है?', q_en:'Who appoints the Governor?', options:[{hi:'राष्ट्रपति',en:'President'},{hi:'प्रधानमंत्री',en:'Prime Minister'},{hi:'विधान सभा',en:'State Assembly'},{hi:'लोकसभा',en:'Lok Sabha'}], answer:'A'},
+{ id:82, q_hi:'MLA का पूरा नाम क्या है?', q_en:'What is full form of MLA?', options:[{hi:'Member of Legislative Assembly',en:'Member of Legislative Assembly'},{hi:'Member of Lok Assembly',en:'Member of Lok Assembly'},{hi:'Minister of Legislative Affairs',en:'Minister of Legislative Affairs'},{hi:'None',en:'None'}], answer:'A'},
+{ id:83, q_hi:'राज्य में सर्वोच्च न्यायालय किसे कहते हैं?', q_en:'What is the highest court in a state called?', options:[{hi:'High Court',en:'High Court'},{hi:'Supreme Court',en:'Supreme Court'},{hi:'District Court',en:'District Court'},{hi:'Gram Nyayalaya',en:'Gram Nyayalaya'}], answer:'A'},
+{ id:84, q_hi:'ग्राम पंचायत का प्रधान किसे कहते हैं?', q_en:'Who is head of Gram Panchayat?', options:[{hi:'प्रधान',en:'Pradhan'},{hi:'Mayor',en:'Mayor'},{hi:'Collector',en:'Collector'},{hi:'Officer',en:'Officer'}], answer:'A'},
+{ id:85, q_hi:'सूचना का अधिकार किस वर्ष आया?', q_en:'In which year RTI was enacted?', options:[{hi:'2005',en:'2005'},{hi:'2002',en:'2002'},{hi:'2010',en:'2010'},{hi:'1990',en:'1990'}], answer:'A'},
+{ id:86, q_hi:'मुख्य सचिव किससे संबंधित होता है?', q_en:'Chief Secretary belongs to which?', options:[{hi:'State Government',en:'State Government'},{hi:'Company',en:'Company'},{hi:'NGO',en:'NGO'},{hi:'College',en:'College'}], answer:'A'},
+{ id:87, q_hi:'राजस्थान विधानसभा कहाँ स्थित है?', q_en:'Where is Rajasthan Legislative Assembly?', options:[{hi:'जयपुर',en:'Jaipur'},{hi:'जोधपुर',en:'Jodhpur'},{hi:'उदयपुर',en:'Udaipur'},{hi:'अजमेर',en:'Ajmer'}], answer:'A'},
+{ id:88, q_hi:'मुख्यमंत्री किससे चुना जाता है?', q_en:'How is Chief Minister chosen?', options:[{hi:'Legislative majority party',en:'Legislative majority party'},{hi:'President',en:'President'},{hi:'Prime Minister',en:'Prime Minister'},{hi:'Supreme Court',en:'Supreme Court'}], answer:'A'},
+{ id:89, q_hi:'लोकसभा का सामान्य कार्यकाल?', q_en:'Normal tenure of Lok Sabha?', options:[{hi:'5 वर्ष',en:'5 years'},{hi:'4 वर्ष',en:'4 years'},{hi:'6 वर्ष',en:'6 years'},{hi:'3 वर्ष',en:'3 years'}], answer:'A'},
+{ id:90, q_hi:'PDS किस स्तर पर नियंत्रित होता है?', q_en:'At what level is PDS controlled?', options:[{hi:'State & Central',en:'State & Central'},{hi:'Only Central',en:'Only Central'},{hi:'Only State',en:'Only State'},{hi:'Private',en:'Private'}], answer:'A'},
+{ id:91, q_hi:'मानव शरीर में रक्त कहाँ बनता है?', q_en:'Where is blood produced in human body?', options:[{hi:'हड्डी का मज्जा',en:'Bone marrow'},{hi:'यकृत',en:'Liver'},{hi:'मस्तिष्क',en:'Brain'},{hi:'फेफड़े',en:'Lungs'}], answer:'A'},
+{ id:92, q_hi:'सौर मंडल का सबसे बड़ा ग्रह?', q_en:'Largest planet in solar system?', options:[{hi:'Jupiter',en:'Jupiter'},{hi:'Earth',en:'Earth'},{hi:'Mars',en:'Mars'},{hi:'Venus',en:'Venus'}], answer:'A'},
+{ id:93, q_hi:'प्रकाश संश्लेषण कहाँ होता है?', q_en:'Where does photosynthesis occur?', options:[{hi:'पत्तियों में',en:'In leaves'},{hi:'जड़ों में',en:'In roots'},{hi:'तनों में',en:'In stems'},{hi:'फलों में',en:'In fruits'}], answer:'A'},
+{ id:94, q_hi:'पानी का रासायनिक सूत्र?', q_en:'Chemical formula of water?', options:[{hi:'H2O',en:'H2O'},{hi:'CO2',en:'CO2'},{hi:'O2',en:'O2'},{hi:'NaCl',en:'NaCl'}], answer:'A'},
+{ id:95, q_hi:'हाइड्रोजन का प्रतीक क्या है?', q_en:'Symbol of Hydrogen?', options:[{hi:'H',en:'H'},{hi:'He',en:'He'},{hi:'Hg',en:'Hg'},{hi:'Hy',en:'Hy'}], answer:'A'},
+{ id:96, q_hi:'वायरस किस श्रेणी में आते हैं?', q_en:'Viruses are?', options:[{hi:'निम्नजीव/अपूर्ण',en:'non-fully living (virus)'},{hi:'पौधे',en:'plants'},{hi:'जीव',en:'animals'},{hi:'मनुष्य',en:'humans'}], answer:'A'},
+{ id:97, q_hi:'ऑक्सीजन शरीर में किससे प्रवेश करती है?', q_en:'From which organ oxygen enters the body?', options:[{hi:'फेफड़े',en:'lungs'},{hi:'दिल',en:'heart'},{hi:'पेट',en:'stomach'},{hi:'किडनी',en:'kidney'}], answer:'A'},
+{ id:98, q_hi:'खानपान का पाचन मुख्यतः किसमें होता है?', q_en:'Which organ mainly digests food?', options:[{hi:'आमाशय',en:'stomach'},{hi:'दिल',en:'heart'},{hi:'मस्तिष्क',en:'brain'},{hi:'फेफड़े',en:'lungs'}], answer:'A'},
+{ id:99, q_hi:'बैक्टीरिया का आकार कैसा होता है?', q_en:'Bacteria are generally?', options:[{hi:'सूक्ष्म',en:'microscopic'},{hi:'बड़े',en:'large'},{hi:'दृश्यमान',en:'visible'},{hi:'विशाल',en:'huge'}], answer:'A'},
+{ id:100, q_hi:'ऊर्जा का SI यूनिट क्या है?', q_en:'SI unit of energy?', options:[{hi:'Joule',en:'Joule'},{hi:'Watt',en:'Watt'},{hi:'Newton',en:'Newton'},{hi:'Pascal',en:'Pascal'}], answer:'A'},
+{ id:101, q_hi:'ओलंपिक कितने वर्षों में होते हैं?', q_en:'Olympics held every how many years?', options:[{hi:'4',en:'4'},{hi:'2',en:'2'},{hi:'5',en:'5'},{hi:'3',en:'3'}], answer:'A'},
+{ id:102, q_hi:'भारत का राष्ट्रगान?', q_en:'National anthem of India?', options:[{hi:'जन गण मन',en:'Jana Gana Mana'},{hi:'वन्दे मातरम्',en:'Vande Mataram'},{hi:'सारे जहाँ से अच्छा',en:'Sare Jahan Se Achha'},{hi:'भारत भाग्य विधाता',en:'Bharat Bhagya Vidhata'}], answer:'A'},
+{ id:103, q_hi:'भारत का राष्ट्रीय पशु?', q_en:'National animal of India?', options:[{hi:'बाघ',en:'Tiger'},{hi:'शेर',en:'Lion'},{hi:'हाथी',en:'Elephant'},{hi:'गाय',en:'Cow'}], answer:'A'},
+{ id:104, q_hi:'COVID-19 के लिए पहली वैक्सीन किस वर्ष आई?', q_en:'Year when first COVID-19 vaccines became available?', options:[{hi:'2020',en:'2020'},{hi:'2018',en:'2018'},{hi:'2015',en:'2015'},{hi:'2010',en:'2010'}], answer:'A'},
+{ id:105, q_hi:'डिजिटल भुगतान का लोकप्रिय तरीका?', q_en:'Popular digital payment method?', options:[{hi:'UPI',en:'UPI'},{hi:'नकद',en:'Cash'},{hi:'चेक',en:'Cheque'},{hi:'लॉटरी',en:'Lottery'}], answer:'A'},
+{ id:106, q_hi:'PMO किस शहर में स्थित है?', q_en:'Prime Minister Office is in which city?', options:[{hi:'नई दिल्ली',en:'New Delhi'},{hi:'मुंबई',en:'Mumbai'},{hi:'कोलकाता',en:'Kolkata'},{hi:'चेन्नई',en:'Chennai'}], answer:'A'},
+{ id:107, q_hi:'भारत में चुनाव कौन आयोजित करता है?', q_en:'Who conducts elections in India?', options:[{hi:'Election Commission of India',en:'Election Commission of India'},{hi:'Supreme Court',en:'Supreme Court'},{hi:'Parliament',en:'Parliament'},{hi:'Prime Minister Office',en:'PMO'}], answer:'A'},
+{ id:108, q_hi:'App डाउनलोड करने के लिए कौन-सा स्टोर?', q_en:'Which store to download apps?', options:[{hi:'Play Store / App Store',en:'Play Store / App Store'},{hi:'Book Store',en:'Book Store'},{hi:'Video Store',en:'Video Store'},{hi:'None',en:'None'}], answer:'A'},
+{ id:109, q_hi:'जल संरक्षण का एक तरीका?', q_en:'One method of water conservation?', options:[{hi:'rainwater harvesting',en:'rainwater harvesting'},{hi:'deforestation',en:'deforestation'},{hi:'wasteful use',en:'wasteful use'},{hi:'pollution',en:'pollution'}], answer:'A'},
+{ id:110, q_hi:'सौर ऊर्जा किस प्रकार की है?', q_en:'Solar energy is what type?', options:[{hi:'नवीकरणीय',en:'renewable'},{hi:'गैर‑नवीकरणीय',en:'non-renewable'},{hi:'रासायनिक',en:'chemical'},{hi:'परमाणु',en:'nuclear'}], answer:'A'},
+{ id:111, q_hi:'कंप्यूटर का मुख्य मस्तिष्क क्या कहलाता है?', q_en:'What is the brain of computer called?', options:[{hi:'CPU',en:'CPU'},{hi:'GPU',en:'GPU'},{hi:'RAM',en:'RAM'},{hi:'ROM',en:'ROM'}], answer:'A'},
+{ id:112, q_hi:'MS Word किसका उदाहरण है?', q_en:'MS Word is an example of?', options:[{hi:'Word Processor',en:'Word Processor'},{hi:'Browser',en:'Browser'},{hi:'Operating System',en:'Operating System'},{hi:'Antivirus',en:'Antivirus'}], answer:'A'},
+{ id:113, q_hi:'Web page का पता क्या कहलाता है?', q_en:'What is address of a web page called?', options:[{hi:'URL',en:'URL'},{hi:'IP',en:'IP'},{hi:'MAC',en:'MAC'},{hi:'FTP',en:'FTP'}], answer:'A'},
+{ id:114, q_hi:'Email भेजने के लिए क्या चाहिए?', q_en:'What is needed to send an email?', options:[{hi:'Email address',en:'Email address'},{hi:'Phone number',en:'Phone number'},{hi:'Bank account',en:'Bank account'},{hi:'Home address',en:'Home address'}], answer:'A'},
+{ id:115, q_hi:'किस संयोजन से कॉपी किया जाता है?', q_en:'Which shortcut is used to copy?', options:[{hi:'Ctrl + C',en:'Ctrl + C'},{hi:'Ctrl + V',en:'Ctrl + V'},{hi:'Ctrl + X',en:'Ctrl + X'},{hi:'Ctrl + Z',en:'Ctrl + Z'}], answer:'A'},
+{ id:116, q_hi:'फाइल सेव करने के लिए कौन-सा बटन दबाएँ?', q_en:'Which option to click to save file?', options:[{hi:'Save',en:'Save'},{hi:'Open',en:'Open'},{hi:'Delete',en:'Delete'},{hi:'Print',en:'Print'}], answer:'A'},
+{ id:117, q_hi:'PowerPoint किसके लिए है?', q_en:'PowerPoint is used for?', options:[{hi:'Presentations',en:'Presentations'},{hi:'Word processing',en:'Word processing'},{hi:'Spreadsheets',en:'Spreadsheets'},{hi:'Email',en:'Email'}], answer:'A'},
+{ id:118, q_hi:'Spreadsheet का लोकप्रिय सॉफ़्टवेयर?', q_en:'Popular spreadsheet software?', options:[{hi:'MS Excel',en:'MS Excel'},{hi:'Notepad',en:'Notepad'},{hi:'MS Paint',en:'MS Paint'},{hi:'Calculator',en:'Calculator'}], answer:'A'},
+{ id:119, q_hi:'Web browser का एक उदाहरण?', q_en:'Example of web browser?', options:[{hi:'Chrome',en:'Chrome'},{hi:'Word',en:'Word'},{hi:'Excel',en:'Excel'},{hi:'PowerPoint',en:'PowerPoint'}], answer:'A'},
+{ id:120, q_hi:'ऑनलाइन सुरक्षा के लिए क्या साझा नहीं करना चाहिए?', q_en:'What should not be shared online for security?', options:[{hi:'Password',en:'Password'},{hi:'Username',en:'Username'},{hi:'Office address',en:'Office address'},{hi:'Public info',en:'Public info'}], answer:'A'}
+];
+
+// --- App state ---
+let answers = {}; let current = 0; let timerInterval=null; let remaining = 120*60; // seconds
+const qarea = document.getElementById('qarea'); const nav = document.getElementById('nav'); const timerD = document.getElementById('timer');
+
+function buildNav(){ nav.innerHTML=''; for(let i=0;i<TOTAL;i++){ const b=document.createElement('button'); b.innerText=(i+1); b.onclick=(()=>{return function(){ current=i; render(); }; })(); nav.appendChild(b);} }
+
+function render(){ const q=questions[current]; qarea.innerHTML=''; const wrap=document.createElement('div'); wrap.className='question'; const head=document.createElement('div'); head.innerHTML=`<strong>${current+1}. ${q.q_hi}</strong><br/><em style="color:#555">${q.q_en}</em>`; wrap.appendChild(head);
+  const opts=document.createElement('div'); opts.className='opts'; for(let i=0;i<q.options.length;i++){ const code=String.fromCharCode(65+i); const lbl=document.createElement('label'); lbl.className='opt'; const inp=document.createElement('input'); inp.type='radio'; inp.name='q'+q.id; inp.value=code; inp.style.marginRight='8px'; if(answers[q.id]===code) inp.checked=true; inp.onchange=function(){ answers[q.id]=code; updateNav(); }; lbl.appendChild(inp); const span=document.createElement('span'); span.innerHTML=`<strong>${code}.</strong> ${q.options[i].hi} <span style="color:#666">/ ${q.options[i].en}</span>`; lbl.appendChild(span); opts.appendChild(lbl);} wrap.appendChild(opts); qarea.appendChild(wrap); window.scrollTo({top:0,behavior:'smooth'}); updateNav(); }
+
+function updateNav(){ for(let i=0;i<nav.children.length;i++){ const qid=questions[i].id; if(answers[qid]) nav.children[i].classList.add('attempt'); else nav.children[i].classList.remove('attempt'); } }
+
+function startTimer(){ clearInterval(timerInterval); timerInterval=setInterval(()=>{ remaining--; if(remaining<=0){ clearInterval(timerInterval); submitTest(); } updateTimer(); },1000); }
+function updateTimer(){ const h=Math.floor(remaining/3600).toString().padStart(2,'0'); const m=Math.floor((remaining%3600)/60).toString().padStart(2,'0'); const s=(remaining%60).toString().padStart(2,'0'); timerD.innerText=`${h}:${m}:${s}`; }
+
+function submitTest(){ clearInterval(timerInterval); // scoring
+  let correct=0, wrong=0, unattempt=0; for(const q of questions){ const sel=answers[q.id]; if(!sel){ unattempt++; continue; } if(sel===q.answer) correct++; else wrong++; }
+  const score = (correct*marksPerQ) - (wrong*neg); const finalScore=Math.max(0, Math.round(score*100)/100);
+  document.getElementById('summary').style.display='block'; const s=document.getElementById('summary'); s.innerHTML=`<div class="result"><h3>Result — ${document.getElementById('name').value || 'Anonymous'}</h3>
+  <p class="small">Correct: ${correct} | Wrong: ${wrong} | Unattempted: ${unattempt}</p>
+  <p><strong>Score: ${finalScore} / ${TOTAL_MARKS}</strong></p>
+  <p class="small">Marks/Q: ${marksPerQ.toFixed(4)} | Negative/Wrong: ${neg.toFixed(4)}</p></div>`;
+  // detailed list
+  const det=document.createElement('div'); det.style.marginTop='12px'; const ol=document.createElement('ol'); for(const q of questions){ const li=document.createElement('li'); const sel=answers[q.id]||'-'; li.innerHTML=`<strong>Q${q.id}</strong> — Your: ${sel} | Correct: ${q.answer} <br/><em>${q.q_hi} / ${q.q_en}</em>`; ol.appendChild(li);} det.appendChild(ol); s.appendChild(det); window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// Navigation buttons
+document.getElementById('start').onclick=function(){ if(!document.getElementById('name').value.trim()){ if(!confirm('Name is empty. Continue?')) return;} buildNav(); current=0; render(); startTimer(); document.getElementById('start').disabled=true; };
+document.getElementById('submit').onclick=function(){ if(confirm('Submit test now?')) submitTest(); };
+
+// Quick nav click handling (delegation)
+nav.addEventListener('click', function(e){ if(e.target.tagName==='BUTTON'){ const idx=Array.prototype.indexOf.call(nav.children,e.target); if(idx>=0){ current=idx; render(); } } });
+
+// restore from localStorage
+(function(){ try{ const saved=JSON.parse(localStorage.getItem('rg4_answers')||'{}'); if(saved) answers=saved; const rem=parseInt(localStorage.getItem('rg4_remaining')); if(!isNaN(rem)) remaining=rem; const nm=localStorage.getItem('rg4_name'); if(nm) document.getElementById('name').value=nm; const dist=localStorage.getItem('rg4_district'); if(dist) document.getElementById('district').value=dist; const dob=localStorage.getItem('rg4_dob'); if(dob) document.getElementById('dob').value=dob; }catch(e){} })();
+window.addEventListener('beforeunload', function(){ localStorage.setItem('rg4_answers', JSON.stringify(answers)); localStorage.setItem('rg4_remaining', remaining); localStorage.setItem('rg4_name', document.getElementById('name').value); localStorage.setItem('rg4_district', document.getElementById('district').value); localStorage.setItem('rg4_dob', document.getElementById('dob').value); });
+
+</script>
+
+</!doctype>
